@@ -1,0 +1,49 @@
+global:
+  scrape_interval: 5s
+  scrape_timeout: 3s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+      scheme: http
+      timeout: 10s
+      api_version: v2
+
+scrape_configs:
+# Сбор метрик самого себя
+  - job_name: prometheus
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - localhost:9090
+# Сбор нативных метрик с приложения flask
+  - job_name: flask-native
+    metrics_path: /metrics
+    scrape_interval: 5s
+    static_configs:
+      - targets:
+          - host.docker.internal:8000
+        labels:
+          service: flask-redis-app
+# Сбор метрик с blackbox
+  - job_name: blackbox-http
+    metrics_path: /probe
+    params:
+      # Сделай HTTP-запрос и считай проверку успешной, если ответ имеет код 2xx.
+      module: [http_2xx]
+    static_configs:
+    # URL который проверяем через блекбокс, сам докер хост
+      - targets:
+          - http://host.docker.internal:8000/
+    # Для корректной обработки метрик
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+
+      - source_labels: [__param_target]
+        target_label: instance
+
+      - target_label: __address__
+        replacement: blackbox:9115
