@@ -6,7 +6,8 @@
 - `monitoring` - Prometheus, Grafana и Blackbox Exporter.
 
 Главная идея проекта: приложение считает посещения в Redis, отдает метрику в формате Prometheus, а стек мониторинга собирает и показывает эти данные.
-Сбор идет как через blackbox так и нативно через метрики prometheus /metrics
+Сбор идет двумя способами: через Blackbox Exporter для HTTP-проверок и напрямую через endpoint `/metrics` приложения.
+
 ## Структура
 
 ```text
@@ -26,7 +27,8 @@ docker-compose/
 │       └── prometheus.yml
 └── debug_outputs/
     ├── docker_compose_ps_flask.txt
-    └── docker_compose_ps_mon.txt
+    ├── docker_compose_ps_mon.txt
+    └── grafana_view_count_panel.JPG
 ```
 
 ## Flask + Redis
@@ -315,3 +317,9 @@ docker compose down -v
 ## Debug Outputs
 
 Папка `debug_outputs` содержит справочно сохраненные выводы команд, скриншоты и другие материалы для отладки или отчета.
+
+Сейчас там лежат:
+
+- `docker_compose_ps_flask.txt` - сохраненный вывод `docker compose ps` для стека Flask + Redis.
+- `docker_compose_ps_mon.txt` - сохраненный вывод `docker compose ps` для стека мониторинга.
+- `grafana_view_count_panel.JPG` - скриншот панели Grafana с метрикой `view_count`.
