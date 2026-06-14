@@ -29,15 +29,42 @@ scrape_configs:
           service: flask-redis-app
 # Сбор метрик с blackbox
   - job_name: blackbox-http
+  # Увеличим время проверок т.к. есть траблы с этим
+    scrape_interval: 15s
+    scrape_timeout: 10s
     metrics_path: /probe
     params:
       # Сделай HTTP-запрос и считай проверку успешной, если ответ имеет код 2xx.
       module: [http_2xx]
     static_configs:
-    # URL который проверяем через блекбокс, сам докер хост
+    # URL который проверяем через блекбокс, сам докер хост и внешние цели
       - targets:
           - http://host.docker.internal:8000/
+          - https://etis.psu.ru/
+          - https://ya.ru/
+          - https://www.amazon.com/
     # Для корректной обработки метрик
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+
+      - source_labels: [__param_target]
+        target_label: instance
+
+      - target_label: __address__
+        replacement: blackbox:9115
+
+# Сбор метрик с blackbox для сайтов с проблемной TLS-цепочкой.
+# Проверка сертификата здесь отключена, отдельный insecure профиль из файла конфигурации blackbox.yml.
+  - job_name: blackbox-http-insecure
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /probe
+    params:
+      module: [http_2xx_insecure]
+    static_configs:
+      - targets:
+          - https://student.psu.ru
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
