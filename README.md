@@ -24,7 +24,7 @@ docker-compose/
 │   │   └── datasource.yml
 │   └── prometheus/
 │       └── prometheus.yml
-└── text_outputs/
+└── debug_outputs/
     ├── docker_compose_ps_flask.txt
     └── docker_compose_ps_mon.txt
 ```
@@ -312,6 +312,6 @@ docker compose down -v
 
 Это удалит историю Prometheus и локальные данные Grafana.
 
-## Text Outputs
+## Debug Outputs
 
-Папка `text_outputs` содержит справочно сохраненные выводы команд.
+Папка `debug_outputs` содержит справочно сохраненные выводы команд, скриншоты и другие материалы для отладки или отчета.
